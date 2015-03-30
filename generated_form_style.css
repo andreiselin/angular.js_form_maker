@@ -1,0 +1,23 @@
+.generated_field {
+    position: relative;
+    border:1px dotted rgba(0,0,0,0.1);
+    padding:10px;
+    box-sizing: border-box;
+    min-height: 40px;
+}
+.generated_field .edit_button {
+    display: none;
+    width: 150px;
+    height: 40px;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    background: rgba(255,25,25,0.8);
+    color: white;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+.generated_field:hover .edit_button {display: block;}
+.edit_button:hover {background: rgba(255,0,0,0.7);}

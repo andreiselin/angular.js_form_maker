@@ -1,0 +1,202 @@
+
+<html ng-app="FormMakerModule">
+
+    <head>
+        <meta charset="UTF-8">
+        <script src='angular.js'></script>
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-route.min.js"></script>-->
+        <script src="form_maker.js"></script>
+        <link href="generated_form_style.css" rel="stylesheet" type="text/css" />
+        <title>Form Maker</title>
+    </head>
+    <style>
+    
+        body {font-size: 16px; font-family: "Arial", sans-serif;}
+        .column {width:48%; float: left; margin:0 1%;}
+        h1 {font-weight: normal; font-size: 30px; text-align: center;}
+        label {padding:10px; display:block;}
+            label > div {margin-bottom:5px;}
+            label:hover {background:rgba(0,0,0,0.03);}
+        .breaker {height:8px; background:rgba(0,0,0,0.1); margin: 20px 0;}
+        
+        .button {padding: 4px 6px; background: rgba(0,0,0,0.5); color:white; border-radius: 5px; cursor: pointer;}
+        .button {background: rgba(0,0,0,0.6);}
+        .big_button {margin:10px 0; width:100%; height:55px; background: rgba(0,0,0,0.5); line-height: 55px; cursor: pointer; font-size: 24px; color:#fff; border-radius: 10px; text-align: center;}
+        .big_button:hover {background: rgba(0,0,0,0.6);}
+        
+        
+        footer {height:200px; clear: both; padding: 10px;}
+        #edit_dialog { background:rgba(255,255,255,0.9); padding:25px;position:fixed; z-index: 11; top:10%; left:50%; width:500px; min-height: 200px; max-height: 80%; margin:0 0 0 -250px; box-shadow: 0 0 25px black;}
+        #shadow { background:rgba(0,0,0,0.3); width:100%; height:100%; position: fixed; z-index: 10; }
+        
+        .edit_dialog_row { margin:5px 0; padding:10px; }
+        .edit_dialog_row_title { margin-bottom:5px; }
+        
+        /* - - form elements - - */
+        input[type=text] { width:100%; font-size: 18px; padding:3px 8px;}
+        textarea { width:100%; font-size: 18px; height: 100px;}
+        select { width:100%; font-size: 18px; padding:3px 8px;}
+        
+    
+    </style>
+    <body ng-controller="FormMakerController">
+        
+        
+        
+        <div ng-show="edit_dialog || show_loading" id="shadow"></div>
+        
+        
+        
+        <div ng-show="edit_dialog" id="edit_dialog">
+            <label for="edit_dialog_type_select">
+                <div>{{interface.field_type[dialog_language]}}</div>
+                <select id="edit_dialog_type_select" ng-options="k as v for (k,v) in field_types" ng-model="form_template.fields[field_to_edit].type">
+                    <option value="" ng-if="false"></option>
+                </select>
+            </label>
+            
+                
+
+                            <!-- title -->
+                                    <label class="edit_dialog_row" ng-if=" form_template.fields[field_to_edit].type != 0">
+                                        <div>{{interface.field_title[dialog_language]}}</div>
+                                        <input type="text" ng-model="form_template.fields[field_to_edit].title[dialog_language]" />
+                                    </label>
+
+                            <!-- placeholder -->
+                                    <label class="edit_dialog_row" ng-if=" form_template.fields[field_to_edit].type == 1 || form_template.fields[field_to_edit].type == 2 ">
+                                        <div class="edit_dialog_row_title">{{interface.field_placeholder[dialog_language]}}</div>
+                                        <input type="text" ng-model="form_template.fields[field_to_edit].placeholder[dialog_language]" />
+                                    </label>
+
+                            <!-- options -->
+                                    <div class="edit_dialog_row" ng-if=" form_template.fields[field_to_edit].type == 3 || form_template.fields[field_to_edit].type == 4 ">
+                                            <div class="edit_dialog_row_title">{{interface.field_options[dialog_language]}}</div>
+                                            <div>
+                                                <label ng-repeat="(edit_option_key, edit_option_value) in form_template.fields[field_to_edit].options">
+                                                    <input type="text" ng-model="edit_option_value[dialog_language]" style="width:75%;" />
+                                                    <span class="button" ng-click="delete_option(edit_option_key)">-</span>
+                                                </label>
+                                            </div>
+                                            <span class="button" ng-click="add_option()" >{{interface.add[dialog_language]}}</span>
+                                    </div>
+
+                            <!-- checked -->
+                                    <label class="edit_dialog_row" ng-if="field.type == 5" class="checkbox_wrapper" >
+                                        <input type="checkbox" ng-model="field.checked" /> {{interface.field_checked[dialog_language]}}
+                                    </label>
+            
+            
+            
+        
+                            <!-- checked -->
+                                    <div class="edit_dialog_row">
+                                        <span class="button" ng-click="close_edit_dialog()">{{interface.ok[dialog_language]}}</span>
+                                    </div>
+            <!--<span class="button" ng-click="do_log()">test</span>-->
+        </div>
+        
+        <div ng-repeat="language in languages" class="column">
+            
+            
+            
+            
+            
+            
+            
+            <h1>{{language.name}}</h1>
+            
+            
+<!-- -- --> <div class="breaker"></div> <!-- -- --> 
+            
+            
+            <label>
+                <div>{{interface.title_title[language.slug]}}:</div>
+                <input type="text" ng-model="form_template.title[language.slug]" />
+            </label>
+            <label>
+                <div>{{interface.cat_title[language.slug]}}:</div>
+                <input type="text" ng-model="form_template.cat[language.slug]" />
+            </label>
+            <label>
+                <div>{{interface.subcat_title[language.slug]}}:</div>
+                <input type="text" ng-model="form_template.subcat[language.slug]" />
+            </label>
+            
+            
+            <div class="big_button" ng-click="add_field(language.slug)">{{interface.add_field_title[language.slug]}}</div>
+            
+            
+<!-- -- --> <div class="breaker"></div> <!-- -- --> 
+            
+            
+            <div ng-repeat="(field_key, field_value) in form_template.fields" class="generated_field">
+                
+                
+                            <!-- delete this in user version -->
+                                <div class="edit_button" ng-click="edit_field_dialog(field_key,language.slug)">{{interface.edit_title[language.slug]}}</div>
+
+                            <!-- placeholder -->
+                                <div ng-if="field_value.type == 0" >
+                                    {{interface.choose_field_type[language.slug]}}
+                                </div>
+
+                            <!-- text -->
+                                <div ng-if="field_value.type == 1" class="text_input_wrapper" >
+                                    <label>
+                                        <div>{{ field_value.title[language.slug] }}</div>
+                                        <input type="text" placeholder="{{field_value.placeholder[language.slug]}}"/>
+                                    </label>
+                                </div>
+
+                            <!-- textarea -->
+                                <div ng-if="field_value.type == 2" class="textarea_wrapper" >
+                                    <div>{{ field_value.title[language.slug] }}</div>
+                                    <textarea placeholder="{{field_value.placeholder[language.slug]}}"></textarea>
+                                </div>
+
+                            <!-- select -->
+                                <div ng-if="field_value.type == 3" class="select_wrapper" >
+                                    <div>{{ field_value.title[language.slug] }}</div>
+                                    <select ng-options="ok as ov[language.slug] for (ok,ov) in field_value.options" ng-model="field_value.selected">
+                                    <!--
+                                    <select ng-options="ok as ov[language.slug] for (ok,ov) in field_value.options">
+                                        <option ng-repeat="(key, value) in field_value.options" value="{{key}}">{{value}}</option>
+                                    -->
+                                    </select>
+                                </div>
+
+                            <!-- radio -->
+                                <div ng-if="field_value.type == 4" class="radio_wrapper" >
+                                    <div>{{ field_value.title[language.slug] }}</div>
+
+                                    <label ng-repeat="(option_key, option_value) in field_value.options">
+                                        <input type="radio" ng-model="field_value.selected" value="{{option_key}}" /> {{option_value[language.slug]}}
+                                    </label>
+                                </div>
+
+                            <!-- checkbox -->
+                                <div ng-if="field_value.type == 5" class="checkbox_wrapper" >
+                                    <input type="checkbox" ng-model="field_value.checked" /> {{ field_value.title[language.slug] }}
+                                </div>
+            
+            
+            
+        
+            </div>
+            
+        
+        
+        
+        
+        
+        
+        
+        </div>
+        <footer>
+            <div class="big_button" ng-click="save_form_template()">Save</div>
+        </footer>
+    <body>
+        
+    </body>
+</html>
